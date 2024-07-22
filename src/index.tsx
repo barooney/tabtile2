@@ -1,15 +1,34 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import './index.css';
-import App from './App';
 import reportWebVitals from './reportWebVitals';
+import {createBrowserRouter, createRoutesFromElements, Route, RouterProvider} from "react-router-dom";
+import Import from "./components/Import";
+import Edit from "./components/Edit";
+import Export from "./components/Export";
+import App from "./App";
+import Dashboard from "./components/Dashboard";
+import {CssBaseline} from "@mui/material";
+
+import "./index.css";
+
+const router = createBrowserRouter(
+    createRoutesFromElements(
+        <Route path={"/"} element={<App />}>
+            <Route path={""} element={<Dashboard />}/>
+            <Route path={"import"} element={<Import />} />
+            <Route path={"edit"} element={<Edit />} />
+            <Route path={"export"} element={<Export/>} />
+        </Route>
+    )
+);
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
 root.render(
   <React.StrictMode>
-    <App />
+      <CssBaseline />
+      <RouterProvider router={router} />
   </React.StrictMode>
 );
 

@@ -1,26 +1,34 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import {Outlet} from "react-router";
+import {AppBar, Box, Button, Container, Toolbar, Typography} from "@mui/material";
+import {Link} from "react-router-dom";
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+
+
+    return <Box sx={{flexGrow: 1}}>
+        <AppBar position={"static"}>
+            <Container>
+                <Toolbar disableGutters>
+                    <Typography variant={"h6"}>Tabtile2</Typography>
+                    <Box sx={{ display: "flex", marginLeft: 4, flexGrow: 1, flexDirection: "row"}}>
+                        <Link to={"/import"} style={{textDecoration: "none"}}>
+                            <Button sx={{ color: 'white', display: 'block' }}>Import</Button>
+                        </Link>
+                        <Link to={"/edit"} style={{textDecoration: "none"}}>
+                            <Button sx={{ color: 'white', display: 'block' }}>Edit</Button>
+                        </Link>
+                        <Link to={"/export"} style={{textDecoration: "none"}}>
+                            <Button sx={{ color: 'white', display: 'block' }}>Export</Button>
+                        </Link>
+                    </Box>
+                </Toolbar>
+            </Container>
+        </AppBar>
+        <Container>
+            <Outlet/>
+        </Container>
+    </Box>;
 }
 
 export default App;

@@ -10,22 +10,20 @@ const Export = () => {
 
     const table = useImportTable((state: any) => state.table);
     let columnWidths: number[] = [];
-    table.map((row: string[], rowIndex: number) => {
-        row.map((cell: string, cellIndex: number) => {
-            if (!columnWidths[cellIndex] || columnWidths[cellIndex] < cell.length) {
-                columnWidths[cellIndex] = cell.length;
+    table.forEach((row: string[], rowIndex: number) => {
+        row.forEach((cell: string, cellIndex: number) => {
+            const cellText = (rowIndex === 0 ? "_. " : " ") + cell.trim();
+            if (!columnWidths[cellIndex] || columnWidths[cellIndex] < cellText.length) {
+                columnWidths[cellIndex] = cellText.length;
             }
         })
     })
 
-    let tableString = "";
-    table.map((row: string[], rowIndex: number) => {
-        tableString += "|";
-        row.map((cell: string, cellIndex: number) => {
-            tableString += (rowIndex === 0 ? "_. " : " ") + cell.padEnd(columnWidths[cellIndex]) + (rowIndex === 0 ? "" : "  ") + "|";
-        })
-        tableString += "\n";
-    })
+    const tableString = table.map((row: string[], rowIndex: number) => {
+        return "|" + row.map((cell: string, cellIndex: number) => {
+            return ((rowIndex === 0 ? "_. " : " ") + cell.trim()).padEnd(columnWidths[cellIndex], " ") + (rowIndex === 0 ? " " : " ");
+        }).join("|") + "|";
+    }).join("\n");
 
     const copyToClipboard = () => {
         navigator.clipboard.writeText(tableString)

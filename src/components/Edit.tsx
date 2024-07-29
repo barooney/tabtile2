@@ -13,7 +13,8 @@ import {
     TableContainer,
     TableHead,
     TableRow,
-    TextField, Typography
+    TextField,
+    Typography
 } from "@mui/material";
 import React, {useRef, useState} from "react";
 import {ArrowDropDown} from "@mui/icons-material";
@@ -35,7 +36,7 @@ const ColumnDropdownButton = ({column}: { column: number }) => {
     }
 
     const handleAddColumnAfter = () => {
-        addColumn(column+1);
+        addColumn(column + 1);
         setOpen(false);
     }
 
@@ -83,7 +84,14 @@ const RowDropdownButton = ({row}: { row: number }) => {
     }
 
     const handleAddRowAfter = () => {
-        addRow(row+1);
+        addRow(row + 1);
+        setOpen(false);
+    }
+
+    const handleAddFiveRowsAfter = () => {
+        for (let i = 0; i < 5; i++) {
+            addRow(row + 1);
+        }
         setOpen(false);
     }
 
@@ -107,6 +115,7 @@ const RowDropdownButton = ({row}: { row: number }) => {
                     <MenuList autoFocusItem>
                         <MenuItem onClick={handleAddRowBefore}>Add row before</MenuItem>
                         <MenuItem onClick={handleAddRowAfter}>Add row after</MenuItem>
+                        <MenuItem onClick={handleAddFiveRowsAfter}>Add five rows after</MenuItem>
                         <MenuItem onClick={handleRemoveRow}>Remove row</MenuItem>
                     </MenuList>
                 </ClickAwayListener>
@@ -135,17 +144,17 @@ const Edit = () => {
                             {table[0].map((cell: string, index: number) => {
                                 return <TableCell key={`cell-0-${index}`}>
                                     <Box display={"flex"} gap={1} flex={1} flexDirection={"row"}>
-                                        <TextField sx={{flexGrow: 1}} size={"small"} variant={"standard"} value={cell}
+                                        <TextField sx={{flexGrow: 1}} size={"small"} variant={"outlined"} value={cell}
                                                    onChange={e => updateCellValue(0, index, e.currentTarget.value)}/>
                                         <ColumnDropdownButton column={index}/>
                                     </Box>
                                 </TableCell>
                             })}
-                            <TableCell key={`cell-0-${columnCount+1}`}></TableCell>
+                            <TableCell key={`cell-0-${columnCount + 1}`}></TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {table.length <= 1 && <TableCell key={`cell-0-${columnCount+1}`} colSpan={columnCount+2}>
+                        {table.length <= 1 && <TableCell key={`cell-0-${columnCount + 1}`} colSpan={columnCount + 2}>
                             <RowDropdownButton row={1}/>
                         </TableCell>}
                         {table.slice(1).map((row: string[], rowIndex: number) => {
@@ -156,9 +165,9 @@ const Edit = () => {
                                                    onChange={e => updateCellValue(rowIndex + 1, cellIndex, e.currentTarget.value)}/>
                                     </TableCell>
                                 })}
-                                <TableCell key={`cell-${rowIndex}-${columnCount+1}`} colSpan={columnCount+2}>
+                                <TableCell key={`cell-${rowIndex}-${columnCount + 1}`} colSpan={columnCount + 2}>
                                     <Box sx={{display: "flex"}} flex={1} flexDirection={"row"} justifyContent={"end"}>
-                                        <RowDropdownButton row={rowIndex+1}/>
+                                        <RowDropdownButton row={rowIndex + 1}/>
                                     </Box>
                                 </TableCell>
                             </TableRow>

@@ -130,6 +130,7 @@ const Edit = () => {
     const hasTable = useImportTable((state: any) => state.table.length > 0 && state.table[0].length > 0);
     const columnCount = useImportTable((state: any) => state.columnCount);
     const updateCellValue = useImportTable((state: any) => state.updateCellValue);
+    const addRow = useImportTable((state: any) => state.addRow);
 
     return (
         <Box>
@@ -161,8 +162,13 @@ const Edit = () => {
                             return <TableRow key={`row-${rowIndex}`}>
                                 {row.map((cell: string, cellIndex: number) => {
                                     return <TableCell key={`cell-${rowIndex}-${cellIndex}`}>
-                                        <TextField sx={{width: "100%"}} size={"small"} variant={"standard"} value={cell}
-                                                   onChange={e => updateCellValue(rowIndex + 1, cellIndex, e.currentTarget.value)}/>
+                                        <TextField sx={{width: "100%"}} size={"small"} variant={"outlined"} value={cell}
+                                                   onChange={e => updateCellValue(rowIndex + 1, cellIndex, e.currentTarget.value)}
+                                                   onKeyUp={e => {
+                                                       if (e.key === "Enter" && cellIndex === columnCount - 1) {
+                                                           addRow(rowIndex + 2);
+                                                       }
+                                                   }}/>
                                     </TableCell>
                                 })}
                                 <TableCell key={`cell-${rowIndex}-${columnCount + 1}`} colSpan={columnCount + 2}>

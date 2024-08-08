@@ -163,9 +163,11 @@ const Edit = () => {
                                 {row.map((cell: string, cellIndex: number) => {
                                     return <TableCell key={`cell-${rowIndex}-${cellIndex}`}>
                                         <TextField sx={{width: "100%"}} size={"small"} variant={"outlined"} value={cell}
+                                                   multiline={true}
                                                    onChange={e => updateCellValue(rowIndex + 1, cellIndex, e.currentTarget.value)}
-                                                   onKeyUp={e => {
-                                                       if (e.key === "Enter" && cellIndex === columnCount - 1) {
+                                                   onKeyDown={e => {
+                                                       if (e.key === "Enter" && cellIndex === columnCount - 1 && e.shiftKey) {
+                                                           e.preventDefault()
                                                            addRow(rowIndex + 2);
                                                        }
                                                    }}/>

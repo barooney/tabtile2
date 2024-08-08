@@ -8,20 +8,37 @@ const Export = () => {
 
     const [copied, setCopied] = useState(false);
 
+    const longestSingleLine = (cellText: string) => {
+        return cellText.split("\n")
+            .reduce((maxLength: number, line: string) => {
+                return Math.max(maxLength, line.length)
+            }, 0)
+    }
+
     const table = useImportTable((state: any) => state.table);
     let columnWidths: number[] = [];
     table.forEach((row: string[], rowIndex: number) => {
         row.forEach((cell: string, cellIndex: number) => {
             const cellText = (rowIndex === 0 ? "_. " : " ") + cell.trim();
             if (!columnWidths[cellIndex] || columnWidths[cellIndex] < cellText.length) {
-                columnWidths[cellIndex] = cellText.length;
+                columnWidths[cellIndex] = longestSingleLine(cellText);
             }
         })
     })
 
+    const parseCell = (rowIndex: number, cell: string, cellIndex: number) => {
+        return ((rowIndex === 0 ? "_. " : " ")
+            + cell.split("\n")
+                .filter(line => line.trim() !== "")
+                .join("\n")
+                .trim())
+            .padEnd(columnWidths[cellIndex], " ")
+            + (rowIndex === 0 ? " " : " ");
+    }
+
     const tableString = table.map((row: string[], rowIndex: number) => {
         return "|" + row.map((cell: string, cellIndex: number) => {
-            return ((rowIndex === 0 ? "_. " : " ") + cell.trim()).padEnd(columnWidths[cellIndex], " ") + (rowIndex === 0 ? " " : " ");
+            return parseCell(rowIndex, cell, cellIndex);
         }).join("|") + "|";
     }).join("\n");
 

@@ -26,12 +26,22 @@ const Export = () => {
         })
     })
 
+    const calculatePrefixSpaces = (cellIndex: number) => {
+        return columnWidths.slice(0, cellIndex).reduce((sum: number, current: number, index: number, arr: number[]) => {
+            return sum + current + 2; // I don't know why this 2 works... It's magic and I recommend not removing it :D
+        }, 0);
+    }
+
+    const cellOpeningOffsetForMultiline: number = 2;
     const parseCell = (rowIndex: number, cell: string, cellIndex: number) => {
         return ((rowIndex === 0 ? "_. " : " ")
             + cell.split("\n")
-                .filter(line => line.trim() !== "")
-                .join("\n")
-                .trim())
+                    .filter(line => line.trim() !== "")
+                    .map(line => {
+                        return line.padStart(calculatePrefixSpaces(cellIndex) + line.length + cellOpeningOffsetForMultiline, " ")
+                    })
+                    .join("\n")
+                    .trim())
             .padEnd(columnWidths[cellIndex], " ")
             + (rowIndex === 0 ? " " : " ");
     }

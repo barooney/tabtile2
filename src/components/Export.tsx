@@ -10,8 +10,11 @@ const Export = () => {
 
     const longestSingleLine = (cellText: string) => {
         return cellText.split("\n")
-            .reduce((maxLength: number, line: string) => {
-                return Math.max(maxLength, line.length)
+            .map((line: string, index: number, arr: string[]) => {
+                return index === 0 ? line.length : line.length + 1
+            })
+            .reduce((maxLength: number, lineLength: number) => {
+                return Math.max(maxLength, lineLength)
             }, 0)
     }
 
@@ -26,22 +29,22 @@ const Export = () => {
         })
     })
 
+    const cellOpeningOffsetForMultiline: number = 2;
     const calculatePrefixSpaces = (cellIndex: number) => {
-        return columnWidths.slice(0, cellIndex).reduce((sum: number, current: number, index: number, arr: number[]) => {
-            return sum + current + 2; // I don't know why this 2 works... It's magic and I recommend not removing it :D
-        }, 0);
+        return columnWidths.slice(0, cellIndex).reduce((sum: number, current: number) => {
+            return sum + current + cellOpeningOffsetForMultiline;
+        }, cellOpeningOffsetForMultiline);
     }
 
-    const cellOpeningOffsetForMultiline: number = 2;
     const parseCell = (rowIndex: number, cell: string, cellIndex: number) => {
         return ((rowIndex === 0 ? "_. " : " ")
             + cell.split("\n")
                     .filter(line => line.trim() !== "")
                     .map((line: string, index: number, array: string[]) => {
                         let prefixSpaces = calculatePrefixSpaces(cellIndex);
-                        let paddedLine = line.padStart(prefixSpaces + line.length + cellOpeningOffsetForMultiline, " ");
+                        let paddedLine = line.padStart(prefixSpaces + line.length, " ");
                         return array.length > 1 && index === array.length - 1
-                        ? paddedLine.padEnd(columnWidths[cellIndex] + prefixSpaces + 1, " ")
+                        ? paddedLine.padEnd(columnWidths[cellIndex] + prefixSpaces - 1, " ")
                             : paddedLine;
                     })
                     .join("\n")

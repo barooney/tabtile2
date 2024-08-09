@@ -37,12 +37,18 @@ const Export = () => {
         return ((rowIndex === 0 ? "_. " : " ")
             + cell.split("\n")
                     .filter(line => line.trim() !== "")
-                    .map(line => {
-                        return line.padStart(calculatePrefixSpaces(cellIndex) + line.length + cellOpeningOffsetForMultiline, " ")
+                    .map((line: string, index: number, array: string[]) => {
+                        let prefixSpaces = calculatePrefixSpaces(cellIndex);
+                        let paddedLine = line.padStart(prefixSpaces + line.length + cellOpeningOffsetForMultiline, " ");
+                        return array.length > 1 && index === array.length - 1
+                        ? paddedLine.padEnd(columnWidths[cellIndex] + prefixSpaces + 1, " ")
+                            : paddedLine;
                     })
                     .join("\n")
-                    .trim())
-            .padEnd(columnWidths[cellIndex], " ")
+                    .concat("*")
+                    .trim()
+                    .slice(0, -1))
+                .padEnd(columnWidths[cellIndex], " ")
             + (rowIndex === 0 ? " " : " ");
     }
 

@@ -45,9 +45,7 @@ const Export = () => {
                             : paddedLine;
                     })
                     .join("\n")
-                    .concat("*")
-                    .trim()
-                    .slice(0, -1))
+                    .trimStart())
                 .padEnd(columnWidths[cellIndex], " ")
             + (rowIndex === 0 ? " " : " ");
     }

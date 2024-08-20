@@ -8,20 +8,54 @@ const Export = () => {
 
     const [copied, setCopied] = useState(false);
 
+    const longestSingleLine = (cellText: string) => {
+        return cellText.split("\n")
+            .map((line: string, index: number, arr: string[]) => {
+                return index === 0 ? line.length : line.length + 1
+            })
+            .reduce((maxLength: number, lineLength: number) => {
+                return Math.max(maxLength, lineLength)
+            }, 0)
+    }
+
     const table = useImportTable((state: any) => state.table);
     let columnWidths: number[] = [];
     table.forEach((row: string[], rowIndex: number) => {
         row.forEach((cell: string, cellIndex: number) => {
             const cellText = (rowIndex === 0 ? "_. " : " ") + cell.trim();
             if (!columnWidths[cellIndex] || columnWidths[cellIndex] < cellText.length) {
-                columnWidths[cellIndex] = cellText.length;
+                columnWidths[cellIndex] = longestSingleLine(cellText);
             }
         })
     })
 
+    const cellOpeningOffsetForMultiline: number = 2;
+    const calculatePrefixSpaces = (cellIndex: number) => {
+        return columnWidths.slice(0, cellIndex).reduce((sum: number, current: number) => {
+            return sum + current + cellOpeningOffsetForMultiline;
+        }, cellOpeningOffsetForMultiline);
+    }
+
+    const parseCell = (rowIndex: number, cell: string, cellIndex: number) => {
+        return ((rowIndex === 0 ? "_. " : " ")
+            + cell.split("\n")
+                    .filter(line => line.trim() !== "")
+                    .map((line: string, index: number, array: string[]) => {
+                        let prefixSpaces = calculatePrefixSpaces(cellIndex);
+                        let paddedLine = line.padStart(prefixSpaces + line.length, " ");
+                        return array.length > 1 && index === array.length - 1
+                        ? paddedLine.padEnd(columnWidths[cellIndex] + prefixSpaces - 1, " ")
+                            : paddedLine;
+                    })
+                    .join("\n")
+                    .trimStart())
+                .padEnd(columnWidths[cellIndex], " ")
+            + (rowIndex === 0 ? " " : " ");
+    }
+
     const tableString = table.map((row: string[], rowIndex: number) => {
         return "|" + row.map((cell: string, cellIndex: number) => {
-            return ((rowIndex === 0 ? "_. " : " ") + cell.trim()).padEnd(columnWidths[cellIndex], " ") + (rowIndex === 0 ? " " : " ");
+            return parseCell(rowIndex, cell, cellIndex);
         }).join("|") + "|";
     }).join("\n");
 

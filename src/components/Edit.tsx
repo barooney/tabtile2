@@ -166,8 +166,8 @@ const Edit = () => {
                                                    multiline={true}
                                                    onChange={e => updateCellValue(rowIndex + 1, cellIndex, e.currentTarget.value)}
                                                    onKeyDown={e => {
-                                                       if (e.key === "Enter" && cellIndex === columnCount - 1 && e.shiftKey) {
-                                                           e.preventDefault()
+                                                       if (e.key === "Enter" && cellIndex === columnCount - 1 && !e.shiftKey) {
+                                                           e.preventDefault();
                                                            addRow(rowIndex + 2);
                                                        }
                                                    }}/>

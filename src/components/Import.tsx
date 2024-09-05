@@ -10,7 +10,10 @@ const Import = () => {
     const [tableLocalString, setTableLocalString] = useState("");
 
     const handleImportTable = () => {
-        setTableString(tableLocalString);
+        setTableString(tableLocalString
+            .split("\n")
+            .map((line: string) => { return line.trim() })
+            .join("\n"));
     }
 
     return (

@@ -23,8 +23,9 @@ const Export = () => {
     table.forEach((row: string[], rowIndex: number) => {
         row.forEach((cell: string, cellIndex: number) => {
             const cellText = (rowIndex === 0 ? "_. " : " ") + cell.trim();
-            if (!columnWidths[cellIndex] || columnWidths[cellIndex] < cellText.length) {
-                columnWidths[cellIndex] = longestSingleLine(cellText);
+            const longestLine = longestSingleLine(cellText);
+            if (!columnWidths[cellIndex] || columnWidths[cellIndex] < longestLine) {
+                columnWidths[cellIndex] = longestLine;
             }
         })
     })

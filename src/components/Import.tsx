@@ -12,7 +12,7 @@ const Import = () => {
     const handleImportTable = () => {
         setTableString(tableLocalString
             .split("\n")
-            .map((line: string) => { return line.trim() })
+            .map((line: string) => { return line.trimStart() })
             .join("\n"));
     }
 

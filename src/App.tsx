@@ -8,7 +8,7 @@ function App() {
 
     return <Box sx={{flexGrow: 1}}>
         <AppBar position={"static"}>
-            <Container>
+            <Container maxWidth={false}>
                 <Toolbar disableGutters>
                     <Typography variant={"h6"}>Tabtile2</Typography>
                     <Box sx={{ display: "flex", marginLeft: 4, flexGrow: 1, flexDirection: "row"}}>
@@ -25,7 +25,7 @@ function App() {
                 </Toolbar>
             </Container>
         </AppBar>
-        <Container>
+        <Container maxWidth={false}>
             <Outlet/>
         </Container>
     </Box>;

@@ -52,13 +52,15 @@ const useImportTable = create<ImportTableState>()((set: any) => ({
             }
         });
 
+
         const table: string[][] = tableRows.map((row) => {
             return row.split("|")
-                .filter((cell) => cell.length > 0)
+                .slice(1, -1)
                 .map((cell) => cell
                     .replace("_. ", "")
-                    .trim())
+                    .trim());
         });
+
         const rowCount = table.length;
         const columnCount = table
             .reduce((max, row) => Math.max(max, row.length), 0);

@@ -6,6 +6,7 @@ import {useState} from "react";
 const Import = () => {
     const setTableString = useImportTable((state: any) => state.setTableString);
     const hasTableString = useImportTable((state: any) => state.table.length);
+    const setTableStringTest = useImportTable((state: any) => state.setTableStringTest);
 
     const [tableLocalString, setTableLocalString] = useState("");
 
@@ -13,7 +14,16 @@ const Import = () => {
         setTableString(tableLocalString
             .split("\n")
             .map((line: string) => { return line.trimStart() })
-            .join("\n"));
+            .join("\n"), false);
+    }
+
+    const testManualParsing = () => {
+        const trimmed = tableLocalString
+            .split("\n")
+            .map((line: string) => { return line.trimStart() })
+            .join("\n");
+        setTableStringTest(trimmed);
+        setTableString(trimmed, true)
     }
 
     return (
@@ -26,6 +36,7 @@ const Import = () => {
                 {hasTableString ? <Link to={"/edit"} onClick={handleImportTable}>
                     <Button variant={"contained"}>Edit</Button>
                 </Link> : <Button variant={"contained"} disabled={true}>Edit</Button>}
+                <Button onClick={testManualParsing} variant={"contained"}>Test</Button>
             </Box>
         </>
     )

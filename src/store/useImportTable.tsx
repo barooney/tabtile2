@@ -6,8 +6,10 @@ interface ImportTableState {
     tableString: string;
     rowCount: number;
     columnCount: number;
-    setTableString: (tableString: string) => void;
+    testing: boolean;
+    setTableString: (tableString: string, testing: boolean) => void;
     updateCellValue: (rowIndex: number, columnIndex: number, value: string) => void;
+    setTableStringTest: (tableString: string) => void;
 
     removeColumn: (columnIndex: number) => void;
     addColumn: (columnIndex: number) => void;
@@ -21,7 +23,8 @@ const useImportTable = create<ImportTableState>()((set: any) => ({
     tableString: "",
     rowCount: 0,
     columnCount: 0,
-    setTableString: (tableString: string) => {
+    testing: false,
+    setTableString: (tableString: string, testing: boolean) => {
         if (tableString === "") {
             set({
                 table: [[]],
@@ -65,6 +68,10 @@ const useImportTable = create<ImportTableState>()((set: any) => ({
             table[0].push(cell.innerText.trim())
         })
 
+        if (testing) {
+            console.log(table);
+            return
+        }
 
         set({
             table,
@@ -72,6 +79,25 @@ const useImportTable = create<ImportTableState>()((set: any) => ({
             rowCount,
             columnCount
         })
+
+    },
+    setTableStringTest: (tableString: string) => {
+        const trimmed = tableString.trim();
+        if (trimmed === "") {
+            set({
+                table: [[]],
+                rowCount: 0,
+                columnCount: 0
+            })
+            return;
+        }
+
+        let rowCount = 0;
+        let columnCount = 0;
+        let table: string[][] = []
+
+        const lines = trimmed.split(/\r?\n/);
+        console.log(lines)
 
     },
     updateCellValue: (rowIndex: number, columnIndex: number, value: string) => {

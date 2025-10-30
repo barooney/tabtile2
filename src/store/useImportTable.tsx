@@ -37,12 +37,17 @@ const useImportTable = create<ImportTableState>()((set: any) => ({
         const tableRows: string[] =  [];
         let currentRow: string = "";
         lines.forEach((line: string) => {
-            currentRow += "\n" + line;
-            if (line.startsWith("|")) {
-                currentRow = line;
-            }
-            if (line.endsWith("|")) {
-                tableRows.push(currentRow.trim());
+            if (!(line.trim() === "|" && currentRow !== "")) {
+                currentRow += "\n" + line;
+                if (line.startsWith("|")) {
+                    currentRow = line;
+                }
+                if (line.endsWith("|")) {
+                    tableRows.push(currentRow.trim());
+                    currentRow = "";
+                }
+            } else {
+                tableRows.push(currentRow.trim() + "|");
                 currentRow = "";
             }
         });

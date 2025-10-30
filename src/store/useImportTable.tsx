@@ -1,15 +1,12 @@
 import {create} from "zustand";
-import textile from "textile-js";
 
 interface ImportTableState {
     table: string[][];
     tableString: string;
     rowCount: number;
     columnCount: number;
-    testing: boolean;
-    setTableString: (tableString: string, testing: boolean) => void;
+    setTableString: (tableString: string) => void;
     updateCellValue: (rowIndex: number, columnIndex: number, value: string) => void;
-    setTableStringTest: (tableString: string) => void;
 
     removeColumn: (columnIndex: number) => void;
     addColumn: (columnIndex: number) => void;
@@ -24,64 +21,7 @@ const useImportTable = create<ImportTableState>()((set: any) => ({
     rowCount: 0,
     columnCount: 0,
     testing: false,
-    setTableString: (tableString: string, testing: boolean) => {
-        if (tableString === "") {
-            set({
-                table: [[]],
-                rowCount: 0,
-                columnCount: 0
-            })
-            return;
-        }
-
-        let rowCount = 0;
-        let columnCount = 0;
-
-        let table: string[][] = []
-
-        const parsedTable = textile.parse(tableString);
-        const tableWrapper = document.createElement("div");
-        tableWrapper.innerHTML = parsedTable;
-        const tbodyElement = tableWrapper.querySelector("table tbody");
-
-        const headRows = tbodyElement?.querySelectorAll("th");
-        if (!headRows) {
-            return;
-        }
-
-        const rows = tbodyElement?.querySelectorAll("tr");
-        if (!rows) {
-            return
-        }
-        rowCount = rows.length;
-        rows.forEach((row, rowIndex) => {
-            table.push([])
-            const cells = row.querySelectorAll("td");
-            columnCount = Math.max(columnCount, cells.length);
-            table[rowIndex] = []
-            cells.forEach((cell, cellIndex) => {
-                table[rowIndex].push(cell.innerText.trim())
-            })
-        })
-
-        headRows.forEach((cell, cellIndex) => {
-            table[0].push(cell.innerText.trim())
-        })
-
-        if (testing) {
-            console.log(table);
-            return
-        }
-
-        set({
-            table,
-            tableString,
-            rowCount,
-            columnCount
-        })
-
-    },
-    setTableStringTest: (tableString: string) => {
+    setTableString: (tableString: string) => {
         const trimmed = tableString.trim();
         if (trimmed === "") {
             set({
@@ -92,13 +32,38 @@ const useImportTable = create<ImportTableState>()((set: any) => ({
             return;
         }
 
-        let rowCount = 0;
-        let columnCount = 0;
-        let table: string[][] = []
 
-        const lines = trimmed.split(/\r?\n/);
-        console.log(lines)
+        const lines: string[] = trimmed.split(/\r?\n/);
+        const tableRows: string[] =  [];
+        let currentRow: string = "";
+        lines.forEach((line: string) => {
+            currentRow += "\n" + line;
+            if (line.startsWith("|")) {
+                currentRow = line;
+            }
+            if (line.endsWith("|")) {
+                tableRows.push(currentRow.trim());
+                currentRow = "";
+            }
+        });
 
+        const table: string[][] = tableRows.map((row) => {
+            return row.split("|")
+                .filter((cell) => cell.length > 0)
+                .map((cell) => cell
+                    .replace("_. ", "")
+                    .trim())
+        });
+        const rowCount = table.length;
+        const columnCount = table
+            .reduce((max, row) => Math.max(max, row.length), 0);
+
+        set({
+            table,
+            tableString,
+            rowCount,
+            columnCount,
+        })
     },
     updateCellValue: (rowIndex: number, columnIndex: number, value: string) => {
         set((state: any) => {

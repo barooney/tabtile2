@@ -1,5 +1,4 @@
 import {create} from "zustand";
-import textile from "textile-js";
 
 interface ImportTableState {
     table: string[][];
@@ -21,8 +20,10 @@ const useImportTable = create<ImportTableState>()((set: any) => ({
     tableString: "",
     rowCount: 0,
     columnCount: 0,
+    testing: false,
     setTableString: (tableString: string) => {
-        if (tableString === "") {
+        const trimmed = tableString.trim();
+        if (trimmed === "") {
             set({
                 table: [[]],
                 rowCount: 0,
@@ -31,48 +32,52 @@ const useImportTable = create<ImportTableState>()((set: any) => ({
             return;
         }
 
-        let rowCount = 0;
-        let columnCount = 0;
+        const lines: string[] = trimmed.split(/\r?\n/);
+        const tableRows: string[] =  [];
+        let currentRow: string = "";
+        lines.forEach((line: string) => {
+            if (!(line.trim() === "|" && currentRow !== "")) {
+                currentRow += "\n" + line;
+                if (line.startsWith("|")) {
+                    currentRow = line;
+                }
+                if (line.endsWith("|")) {
+                    tableRows.push(currentRow.trim());
+                    currentRow = "";
+                }
+            } else {
+                tableRows.push(currentRow.trim() + "|");
+                currentRow = "";
+            }
+        });
 
-        let table: string[][] = []
+        const tableSkewered: string[][] = tableRows.map((row) => {
+            return row.split("|")
+                .slice(1, -1)
+                .map((cell) => cell
+                    .replace("_. ", "")
+                    .trim());
+        });
 
-        const parsedTable = textile.parse(tableString);
-        const tableWrapper = document.createElement("div");
-        tableWrapper.innerHTML = parsedTable;
-        const tbodyElement = tableWrapper.querySelector("table tbody");
+        const rowCount = tableSkewered.length;
+        const columnCount = tableSkewered
+            .reduce((max, row) => Math.max(max, row.length), 0);
 
-        const headRows = tbodyElement?.querySelectorAll("th");
-        if (!headRows) {
-            return;
-        }
+        const tableFilled = Array.from({length: rowCount}, () =>
+            Array<string>(columnCount).fill(""));
 
-        const rows = tbodyElement?.querySelectorAll("tr");
-        if (!rows) {
-            return
-        }
-        rowCount = rows.length;
-        rows.forEach((row, rowIndex) => {
-            table.push([])
-            const cells = row.querySelectorAll("td");
-            columnCount = Math.max(columnCount, cells.length);
-            table[rowIndex] = []
-            cells.forEach((cell, cellIndex) => {
-                table[rowIndex].push(cell.innerText.trim())
+        tableSkewered.forEach((row, rowIdx) => {
+            row.forEach((cell, colIdx) => {
+                tableFilled[rowIdx][colIdx] = cell;
             })
-        })
-
-        headRows.forEach((cell, cellIndex) => {
-            table[0].push(cell.innerText.trim())
-        })
-
+        });
 
         set({
-            table,
+            table: tableFilled,
             tableString,
             rowCount,
-            columnCount
+            columnCount,
         })
-
     },
     updateCellValue: (rowIndex: number, columnIndex: number, value: string) => {
         set((state: any) => {

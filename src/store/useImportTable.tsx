@@ -32,7 +32,6 @@ const useImportTable = create<ImportTableState>()((set: any) => ({
             return;
         }
 
-
         const lines: string[] = trimmed.split(/\r?\n/);
         const tableRows: string[] =  [];
         let currentRow: string = "";
@@ -52,8 +51,7 @@ const useImportTable = create<ImportTableState>()((set: any) => ({
             }
         });
 
-
-        const table: string[][] = tableRows.map((row) => {
+        const tableSkewered: string[][] = tableRows.map((row) => {
             return row.split("|")
                 .slice(1, -1)
                 .map((cell) => cell
@@ -61,12 +59,21 @@ const useImportTable = create<ImportTableState>()((set: any) => ({
                     .trim());
         });
 
-        const rowCount = table.length;
-        const columnCount = table
+        const rowCount = tableSkewered.length;
+        const columnCount = tableSkewered
             .reduce((max, row) => Math.max(max, row.length), 0);
 
+        const tableFilled = Array.from({length: rowCount}, () =>
+            Array<string>(columnCount).fill(""));
+
+        tableSkewered.forEach((row, rowIdx) => {
+            row.forEach((cell, colIdx) => {
+                tableFilled[rowIdx][colIdx] = cell;
+            })
+        });
+
         set({
-            table,
+            table: tableFilled,
             tableString,
             rowCount,
             columnCount,

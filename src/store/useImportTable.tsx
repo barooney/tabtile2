@@ -32,6 +32,30 @@ const useImportTable = create<ImportTableState>()((set: any) => ({
             return;
         }
 
+        if (!trimmed.includes("|")) {
+            let regex = trimmed.match(/^(\d+)x(\d+)$/);
+            console.log(regex)
+            if (regex) {
+                const height = Math.max(1, Number(regex[1]));
+                const width = Math.max(1, Number(regex[2]));
+                console.log(height, width);
+                const table = Array.from({length: height}, () =>
+                    Array<string>(width).fill(""));
+                set({
+                    table: table,
+                    rowCount: height,
+                    columnCount: width,
+                })
+                return;
+            }
+            set({
+                table: [[trimmed]],
+                rowCount: 1,
+                columnCount: 1,
+            })
+            return;
+        }
+
         const lines: string[] = trimmed.split(/\r?\n/);
         const tableRows: string[] =  [];
         let currentRow: string = "";
